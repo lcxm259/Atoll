@@ -256,6 +256,20 @@ enum CalendarSelectionState: Codable, Defaults.Serializable {
     case selected(Set<String>)
 }
 
+enum HomeSidePanelKind: String, CaseIterable, Identifiable, Defaults.Serializable {
+    case calendar
+    case memo
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .calendar: return String(localized: "Calendar")
+        case .memo: return String(localized: "Memo")
+        }
+    }
+}
+
 enum FantasticalViewStyle: String, CaseIterable, Codable, Defaults.Serializable {
     case mini = "mini"
     case calendar = "calendar"
@@ -910,6 +924,8 @@ extension Defaults.Keys {
     static let animationTransformOverrides = Key<[String: AnimationTransformConfig]>("animationTransformOverrides", default: [:])
     static let tileShowLabels = Key<Bool>("tileShowLabels", default: false)
     static let showCalendar = Key<Bool>("showCalendar", default: true)
+    static let homeSidePanelKind = Key<HomeSidePanelKind>("homeSidePanelKind", default: .calendar)
+    static let homeMemoText = Key<String>("homeMemoText", default: "")
     static let hideCompletedReminders = Key<Bool>("hideCompletedReminders", default: true)
     static let hideAllDayEvents = Key<Bool>("hideAllDayEvents", default: false)
     static let sliderColor = Key<SliderColorEnum>(

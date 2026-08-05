@@ -787,7 +787,8 @@ struct SettingsView: View {
             SettingsSearchEntry(tab: .media, title: "Enable album art parallax effect", keywords: ["parallax", "parallax effect", "album art"], highlightID: SettingsTab.media.highlightID(for: "Enable album art parallax effect")),
 
             // Calendar
-            SettingsSearchEntry(tab: .calendar, title: "Show calendar", keywords: ["calendar", "events"], highlightID: SettingsTab.calendar.highlightID(for: "Show calendar")),
+            SettingsSearchEntry(tab: .calendar, title: "Show home panel", keywords: ["calendar", "events", "memo", "home panel"], highlightID: SettingsTab.calendar.highlightID(for: "Show home panel")),
+            SettingsSearchEntry(tab: .calendar, title: "Home panel", keywords: ["calendar", "memo", "home panel"], highlightID: SettingsTab.calendar.highlightID(for: "Home panel")),
             SettingsSearchEntry(tab: .calendar, title: "Enable reminder live activity", keywords: ["reminder", "live activity"], highlightID: SettingsTab.calendar.highlightID(for: "Enable reminder live activity")),
             SettingsSearchEntry(tab: .calendar, title: "Countdown style", keywords: ["reminder countdown"], highlightID: SettingsTab.calendar.highlightID(for: "Countdown style")),
             SettingsSearchEntry(tab: .calendar, title: "Show lock screen reminder", keywords: ["lock screen", "reminder widget"], highlightID: SettingsTab.calendar.highlightID(for: "Show lock screen reminder")),
@@ -3119,6 +3120,7 @@ struct Media: View {
 struct CalendarSettings: View {
     @ObservedObject private var calendarManager = CalendarManager.shared
     @Default(.showCalendar) var showCalendar: Bool
+    @Default(.homeSidePanelKind) var homeSidePanelKind: HomeSidePanelKind
     @Default(.enableReminderLiveActivity) var enableReminderLiveActivity
     @Default(.reminderPresentationStyle) var reminderPresentationStyle
     @Default(.reminderLeadTime) var reminderLeadTime
@@ -3214,9 +3216,18 @@ struct CalendarSettings: View {
                 }
 
                 Defaults.Toggle(key: .showCalendar) {
-                    Text("Show calendar")
+                    Text("Show home panel")
                 }
-                .settingsHighlight(id: highlightID("Show calendar"))
+                .settingsHighlight(id: highlightID("Show home panel"))
+
+                Picker("Home panel", selection: $homeSidePanelKind) {
+                    ForEach(HomeSidePanelKind.allCases) { kind in
+                        Text(kind.displayName).tag(kind)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .disabled(!showCalendar)
+                .settingsHighlight(id: highlightID("Home panel"))
 
                 Section(header: Text("Event List")) {
                     Toggle("Hide completed reminders", isOn: $hideCompletedReminders)

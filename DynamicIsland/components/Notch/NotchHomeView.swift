@@ -691,6 +691,7 @@ struct NotchHomeView: View {
     @ObservedObject private var musicManager = MusicManager.shared
     @Default(.showStandardMediaControls) private var showStandardMediaControls
     @Default(.autoHideInactiveNotchMediaPlayer) private var autoHideInactiveNotchMediaPlayer
+    @Default(.homeSidePanelKind) private var homeSidePanelKind
     let albumArtNamespace: Namespace.ID
 
     /// Whether the music player should actively display (enabled AND has real content).
@@ -727,10 +728,19 @@ struct NotchHomeView: View {
                 
                 if Defaults[.showCalendar] {
                     Group {
-                        if shouldShowMusicPlayer {
-                            CalendarView()
-                        } else {
-                            StandaloneCalendarView()
+                        switch homeSidePanelKind {
+                        case .calendar:
+                            if shouldShowMusicPlayer {
+                                CalendarView()
+                            } else {
+                                StandaloneCalendarView()
+                            }
+                        case .memo:
+                            if shouldShowMusicPlayer {
+                                HomeMemoView()
+                            } else {
+                                StandaloneHomeMemoView()
+                            }
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
