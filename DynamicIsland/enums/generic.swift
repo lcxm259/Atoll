@@ -70,8 +70,9 @@ public enum NotchState {
     case open
 }
 
-public enum NotchViews {
+public enum NotchViews: String {
     case home
+    case quickNote
     case shelf
     case timer
     case stats

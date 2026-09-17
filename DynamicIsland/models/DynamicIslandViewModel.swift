@@ -453,7 +453,7 @@ class DynamicIslandViewModel: NSObject, ObservableObject {
         if !ShelfStateViewModel.shared.isEmpty && Defaults[.openShelfByDefault] && !Defaults[.enableMinimalisticUI] {
             coordinator.currentView = .shelf
         } else if !coordinator.openLastTabByDefault {
-            coordinator.currentView = .home
+            coordinator.currentView = NotchTabOrder.defaultLandingView()
         }
     }
 

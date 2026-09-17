@@ -99,20 +99,22 @@ class DynamicIslandViewCoordinator: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var hoverOpenSuppressedUntil: Date = .distantPast
     
-    private static let tabOrder: [NotchViews] = [.home, .shelf, .timer, .stats, .llmUsage, .colorPicker, .notes, .clipboard, .terminal, .extensionExperience]
-    
+    private var tabOrder: [NotchViews] {
+        NotchTabOrder.animationTabOrder
+    }
+
     /// Direction of the most recent tab switch (true = forward/right, false = backward/left)
     @Published var tabSwitchForward: Bool = true
     
-    @Published var currentView: NotchViews = .home {
+    @Published var currentView: NotchViews = NotchTabOrder.defaultLandingView() {
         didSet {
             if Defaults[.enableMinimalisticUI] && currentView != .home {
                 currentView = .home
                 return
             }
             // Track direction before SwiftUI re-renders
-            let oldIdx = Self.tabOrder.firstIndex(of: oldValue) ?? 0
-            let newIdx = Self.tabOrder.firstIndex(of: currentView) ?? 0
+            let oldIdx = tabOrder.firstIndex(of: oldValue) ?? 0
+            let newIdx = tabOrder.firstIndex(of: currentView) ?? 0
             tabSwitchForward = newIdx >= oldIdx
             handleStatsTabTransition(from: oldValue, to: currentView)
         }
@@ -136,7 +138,7 @@ class DynamicIslandViewCoordinator: ObservableObject {
             if !alwaysShowTabs {
                 openLastTabByDefault = false
                 if TrayDrop.shared.isEmpty || !Defaults[.openShelfByDefault] {
-                    currentView = .home
+                    currentView = NotchTabOrder.defaultLandingView()
                 }
             }
         }
@@ -177,6 +179,13 @@ class DynamicIslandViewCoordinator: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] change in
                 self?.handleTimerFeatureToggle(change.newValue)
+            }
+            .store(in: &cancellables)
+
+        Defaults.publisher(.enableQuickNote)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                self?.handleQuickNoteFeatureToggle(change.newValue)
             }
             .store(in: &cancellables)
 
@@ -227,6 +236,7 @@ class DynamicIslandViewCoordinator: ObservableObject {
             Defaults.publisher(.timerDisplayMode).map { _ in () }.eraseToAnyPublisher(),
             Defaults.publisher(.enableStatsFeature).map { _ in () }.eraseToAnyPublisher(),
             Defaults.publisher(.enableNotes).map { _ in () }.eraseToAnyPublisher(),
+            Defaults.publisher(.enableQuickNote).map { _ in () }.eraseToAnyPublisher(),
             Defaults.publisher(.enableClipboardManager).map { _ in () }.eraseToAnyPublisher(),
             Defaults.publisher(.clipboardDisplayMode).map { _ in () }.eraseToAnyPublisher(),
             Defaults.publisher(.enableTerminalFeature).map { _ in () }.eraseToAnyPublisher(),
@@ -260,14 +270,21 @@ class DynamicIslandViewCoordinator: ObservableObject {
     private func handleTimerDisplayModeChange(_ mode: TimerDisplayMode) {
         guard mode == .popover, currentView == .timer else { return }
         withAnimation(.smooth) {
-            currentView = .home
+            currentView = NotchTabOrder.defaultLandingView()
         }
     }
 
     private func handleTimerFeatureToggle(_ isEnabled: Bool) {
         guard !isEnabled, currentView == .timer else { return }
         withAnimation(.smooth) {
-            currentView = .home
+            currentView = NotchTabOrder.defaultLandingView()
+        }
+    }
+
+    private func handleQuickNoteFeatureToggle(_ isEnabled: Bool) {
+        guard !isEnabled, currentView == .quickNote else { return }
+        withAnimation(.smooth) {
+            currentView = NotchTabOrder.defaultLandingView()
         }
     }
 
@@ -448,7 +465,7 @@ class DynamicIslandViewCoordinator: ObservableObject {
 
     
     func showEmpty() {
-        currentView = .home
+        currentView = NotchTabOrder.defaultLandingView()
     }
     
     // MARK: - Clipboard Management

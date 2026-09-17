@@ -60,6 +60,8 @@ struct TabSelectionView: View {
     @Default(.showMirror) private var showMirror
     @Default(.showStandardMediaControls) private var showStandardMediaControls
     @Default(.enableMinimalisticUI) private var enableMinimalisticUI
+    @Default(.notchTabOrder) private var notchTabOrder
+    @Default(.enableQuickNote) private var enableQuickNote
     @Namespace var animation
     
     private var tabs: [TabModel] {
@@ -67,6 +69,10 @@ struct TabSelectionView: View {
 
         if homeTabVisible {
             tabsArray.append(TabModel(label: "Home", icon: "house.fill", view: .home))
+        }
+
+        if enableQuickNote {
+            tabsArray.append(TabModel(label: "Quick Note", icon: "square.and.pencil", view: .quickNote))
         }
 
         if Defaults[.dynamicShelf] {
@@ -95,6 +101,9 @@ struct TabSelectionView: View {
         if Defaults[.enableTerminalFeature] {
             tabsArray.append(TabModel(label: "Terminal", icon: "apple.terminal", view: .terminal))
         }
+
+        tabsArray = NotchTabOrder.sort(tabsArray, order: NotchTabOrder.resolvedOrder(notchTabOrder))
+
         if extensionTabsEnabled {
             for payload in extensionTabPayloads {
                 guard let tab = payload.descriptor.tab else { continue }

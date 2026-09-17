@@ -1019,6 +1019,7 @@ extension Defaults.Keys {
         // MARK: Appearance
     static let showEmojis = Key<Bool>("showEmojis", default: false)
         //static let alwaysShowTabs = Key<Bool>("alwaysShowTabs", default: true)
+    static let notchTabOrder = Key<[String]>("notchTabOrder", default: NotchTabOrder.defaultSystemIDs)
     static let showMirror = Key<Bool>("showMirror", default: false)
     static let mirrorShape = Key<MirrorShapeEnum>("mirrorShape", default: MirrorShapeEnum.rectangle)
     static let selectedCameraID = Key<String>("selectedCameraID", default: "")
@@ -1514,6 +1515,11 @@ extension Defaults.Keys {
     static let lyricsPanelOffset = Key<CGFloat>("lyricsPanelOffset", default: 0)
     static let showLiveCanvasInDynamicIsland = Key<Bool>("showLiveCanvasInDynamicIsland", default: false)
     
+    // MARK: Quick Note
+    static let enableQuickNote = Key<Bool>("enableQuickNote", default: true)
+    static let quickNotes = Key<[QuickNoteItem]>("quickNotes", default: [])
+    static let quickNoteText = Key<String>("quickNoteText", default: "")
+
     // MARK: Notes Feature
     static let enableNotes = Key<Bool>("enableNotes", default: false)
     static let enableNotePinning = Key<Bool>("enableNotePinning", default: true)

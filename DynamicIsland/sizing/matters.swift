@@ -106,6 +106,10 @@ func enabledStandardTabCount() -> Int {
         count += 1
     }
 
+    if Defaults[.enableQuickNote] {
+        count += 1
+    }
+
     // Shelf tab
     if Defaults[.dynamicShelf] {
         count += 1
